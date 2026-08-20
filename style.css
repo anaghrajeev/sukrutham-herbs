@@ -324,32 +324,98 @@ address { font-style: normal; }
   transition: all 0.3s;
 }
 
-.mobile-menu {
-  display: none;
-  flex-direction: column;
-  padding: 16px 24px 24px;
-  background: rgba(26,58,42,0.98);
-  backdrop-filter: blur(16px);
+.mobile-menu-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  z-index: 1001;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
 }
 
-.mobile-menu.open { display: flex; }
+.mobile-menu-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
 
-.mobile-menu a {
-  color: rgba(255,255,255,0.85);
-  padding: 14px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-  font-size: 1rem;
+.mobile-menu {
+  position: fixed;
+  top: 0;
+  right: -320px;
+  width: 320px;
+  max-width: 85vw;
+  height: 100vh;
+  background: var(--green-deep);
+  z-index: 1002;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  transition: right 0.4s cubic-bezier(0.77,0,0.18,1);
+  box-shadow: -10px 0 30px rgba(0,0,0,0.3);
+}
+
+.mobile-menu.open { right: 0; }
+
+.mobile-menu-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 40px;
+}
+
+.mobile-menu-logo {
+  height: 48px;
+  width: auto;
+  border-radius: 50%;
+  background: white;
+  padding: 2px;
+}
+
+.mobile-menu-close {
+  background: rgba(255,255,255,0.1);
+  border: none;
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.mobile-menu-links {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+}
+
+.mobile-menu-links a {
+  color: rgba(255,255,255,0.9);
+  font-size: 1.1rem;
+  font-weight: 500;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
 .mobile-cta {
-  margin-top: 16px;
   background: #25D366;
   color: white !important;
-  padding: 14px 24px;
+  padding: 16px;
   border-radius: 12px;
   text-align: center;
   font-weight: 700;
-  border: none !important;
+  margin-top: auto;
+  font-size: 1.05rem;
+  box-shadow: 0 4px 14px rgba(37,211,102,0.3);
+}
+
+.mobile-bottom-nav {
+  display: none;
 }
 
 /* ========== HERO ========== */
@@ -1848,28 +1914,88 @@ address { font-style: normal; }
 }
 
 @media (max-width: 768px) {
-  :root { --section-py: 64px; }
+  :root { --section-py: 48px; }
 
   .nav-links { display: none; }
   .hamburger { display: flex; }
+  
+  body { padding-bottom: 64px; /* for bottom nav */ }
 
-  .hero { padding: 100px 24px 64px; gap: 40px; }
-  .hero-headline { font-size: 2.2rem; }
+  .hero { padding: 90px 20px 48px; gap: 32px; }
+  .hero-headline { font-size: 2rem; }
   .hero-badge-float { display: none; }
-  .hero-trust { flex-direction: column; gap: 16px; align-items: center; }
+  .hero-trust { flex-direction: column; gap: 12px; align-items: center; }
   .trust-divider { display: none; }
   .hero-ctas { flex-direction: column; width: 100%; gap: 16px; }
   .hero-ctas .btn-primary, .hero-ctas .btn-secondary { width: 100%; text-align: center; justify-content: center; }
 
-  .section-title { font-size: 2rem; }
+  .section-title { font-size: 1.8rem; }
 
   .benefits-grid { grid-template-columns: 1fr; }
-  .products-grid { grid-template-columns: 1fr; }
+  
+  /* Horizontal snap scroll for products */
+  .products-grid { 
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 16px;
+    padding-bottom: 16px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+  }
+  .products-grid::-webkit-scrollbar { display: none; } /* Safari and Chrome */
+  
+  .product-card {
+    min-width: 85vw;
+    scroll-snap-align: center;
+  }
+
   .testimonials-grid { grid-template-columns: 1fr; }
   
   .footer-grid { grid-template-columns: 1fr; }
 
-  .whatsapp-float { bottom: 20px; right: 20px; width: 56px; height: 56px; }
+  /* Adjust whatsapp float to sit above bottom nav */
+  .whatsapp-float { bottom: 84px; right: 16px; width: 52px; height: 52px; }
+  
+  .mobile-bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    background: rgba(26,58,42,0.98);
+    backdrop-filter: blur(12px);
+    z-index: 999;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    justify-content: space-around;
+    align-items: center;
+    padding: 0 8px;
+    box-shadow: 0 -4px 16px rgba(0,0,0,0.2);
+  }
+  
+  .mb-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    color: rgba(255,255,255,0.7);
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 8px 12px;
+    flex: 1;
+    text-align: center;
+  }
+  
+  .mb-nav-item i { font-size: 1.3rem; }
+  .mb-nav-item.active { color: var(--gold-light); }
+  
+  .mb-nav-wa {
+    color: #25D366;
+  }
+  .mb-nav-wa i {
+    font-size: 1.5rem;
+  }
 }
 
 /* ========== PHOSPHOR ICONS CSS ========== */

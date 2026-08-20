@@ -15,30 +15,28 @@ window.addEventListener('scroll', () => {
 /* ---------- Mobile Menu Toggle ---------- */
 const hamburger = document.getElementById('hamburger');
 const mobileMenu = document.getElementById('mobile-menu');
+const mobileOverlay = document.getElementById('mobile-menu-overlay');
+const closeBtn = document.getElementById('mobile-menu-close');
 
-hamburger.addEventListener('click', () => {
-  mobileMenu.classList.toggle('open');
-  const spans = hamburger.querySelectorAll('span');
-  if (mobileMenu.classList.contains('open')) {
-    spans[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
-    spans[1].style.opacity = '0';
-    spans[2].style.transform = 'rotate(-45deg) translate(5px, -5px)';
-  } else {
-    spans[0].style.transform = '';
-    spans[1].style.opacity = '';
-    spans[2].style.transform = '';
-  }
-});
+function openMenu() {
+  mobileMenu.classList.add('open');
+  mobileOverlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeMenu() {
+  mobileMenu.classList.remove('open');
+  mobileOverlay.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+hamburger.addEventListener('click', openMenu);
+if (closeBtn) closeBtn.addEventListener('click', closeMenu);
+if (mobileOverlay) mobileOverlay.addEventListener('click', closeMenu);
 
 // Close mobile menu when a link is clicked
 mobileMenu.querySelectorAll('a').forEach(link => {
-  link.addEventListener('click', () => {
-    mobileMenu.classList.remove('open');
-    const spans = hamburger.querySelectorAll('span');
-    spans[0].style.transform = '';
-    spans[1].style.opacity = '';
-    spans[2].style.transform = '';
-  });
+  link.addEventListener('click', closeMenu);
 });
 
 /* ---------- Scroll Animation (IntersectionObserver) ---------- */
@@ -236,6 +234,31 @@ window.addEventListener('scroll', () => {
 
   track.addEventListener('mouseenter', () => clearInterval(autoInterval));
   track.addEventListener('mouseleave', () => startAuto());
+
+  // Add touch swipe support
+  let touchStartX = 0;
+  let touchEndX = 0;
+
+  track.addEventListener('touchstart', e => {
+    touchStartX = e.changedTouches[0].screenX;
+    clearInterval(autoInterval);
+  }, { passive: true });
+
+  track.addEventListener('touchend', e => {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipe();
+    startAuto();
+  }, { passive: true });
+
+  function handleSwipe() {
+    const minSwipeDist = 40;
+    if (touchEndX < touchStartX - minSwipeDist) {
+      goTo(current + 1); // swiped left
+    }
+    if (touchEndX > touchStartX + minSwipeDist) {
+      goTo(current - 1); // swiped right
+    }
+  }
 
   goTo(0);
   startAuto();
