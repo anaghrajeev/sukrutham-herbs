@@ -263,3 +263,107 @@ window.addEventListener('scroll', () => {
   goTo(0);
   startAuto();
 })();
+
+/* ---------- Supabase Testimonials ---------- */
+(function () {
+  const grid = document.getElementById('testimonials-grid');
+  if (!grid) return;
+
+  // Fallback testimonials (shown if Supabase is not configured or fails)
+  const fallbackTestimonials = [
+    {
+      name: 'Suresh Rajan',
+      location: 'Kochi, Kerala',
+      quote: "I've been taking Diabetone for 8 months. My HbA1c has reduced from 9.2 to 6.8. My doctor is amazed. This is truly a miracle product!",
+      rating: 5,
+      is_featured: false
+    },
+    {
+      name: 'Priya Menon',
+      location: 'Thrissur, Kerala',
+      quote: "My mother has been using Diabetone for over a year now. She feels more energetic, her sugar levels are stable and she hasn't had a single side effect.",
+      rating: 5,
+      is_featured: false
+    },
+    {
+      name: 'Anand Kumar',
+      location: 'Ernakulam, Kerala',
+      quote: "As a diabetic for 15 years, I was sceptical about Ayurveda. But after 3 months on Diabetone, my fasting sugar dropped by 40 points. Completely natural, no side effects!",
+      rating: 5,
+      is_featured: true
+    }
+  ];
+
+  function getInitials(name) {
+    return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+  }
+
+  function renderStars(count) {
+    let html = '<div class="stars">';
+    for (let i = 0; i < count; i++) {
+      html += '<i class="ph-fill ph-star"></i>';
+    }
+    html += '</div>';
+    return html;
+  }
+
+  function renderTestimonials(testimonials) {
+    grid.innerHTML = '';
+    testimonials.forEach((t, idx) => {
+      const card = document.createElement('div');
+      card.className = 'testimonial-card' + (t.is_featured ? ' featured-testimonial' : '');
+      card.setAttribute('data-animate', '');
+      card.innerHTML = `
+        ${renderStars(t.rating)}
+        <p>"${t.quote}"</p>
+        <div class="t-author">
+          <div class="t-avatar">${getInitials(t.name)}</div>
+          <div>
+            <strong>${t.name}</strong>
+            <small>${t.location}</small>
+          </div>
+        </div>
+      `;
+      grid.appendChild(card);
+
+      // Re-observe for scroll animation
+      card.style.transitionDelay = `${idx * 0.08}s`;
+      observer.observe(card);
+    });
+  }
+
+  async function loadTestimonials() {
+    // Check if Supabase is configured
+    if (typeof SUPABASE_URL === 'undefined' ||
+        typeof SUPABASE_ANON_KEY === 'undefined' ||
+        SUPABASE_URL === 'YOUR_SUPABASE_URL_HERE' ||
+        SUPABASE_ANON_KEY === 'YOUR_SUPABASE_ANON_KEY_HERE') {
+      // Not configured — use fallback
+      renderTestimonials(fallbackTestimonials);
+      return;
+    }
+
+    try {
+      const { createClient } = supabase;
+      const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+      const { data, error } = await client
+        .from('testimonials')
+        .select('*')
+        .order('is_featured', { ascending: false })
+        .order('created_at', { ascending: false });
+
+      if (error || !data || data.length === 0) {
+        renderTestimonials(fallbackTestimonials);
+        return;
+      }
+
+      renderTestimonials(data);
+    } catch (err) {
+      console.warn('Supabase load failed, using fallback testimonials:', err);
+      renderTestimonials(fallbackTestimonials);
+    }
+  }
+
+  loadTestimonials();
+})();

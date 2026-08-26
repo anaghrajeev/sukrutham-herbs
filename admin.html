@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel — Sukrutham AI Sugar Care</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="icon" type="image/png" href="images/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body>
+
+  <!-- ========== LOGIN GATE ========== -->
+  <div class="login-gate" id="login-gate">
+    <div class="login-card">
+      <div class="login-logo">
+        <img src="images/logo.png" alt="Sukrutham Herbs" />
+      </div>
+      <h1>Admin Panel</h1>
+      <p class="login-subtitle">Sukrutham AI Sugar Care</p>
+      <form id="login-form" autocomplete="off">
+        <div class="form-group">
+          <label for="admin-password">Password</label>
+          <div class="password-input-wrap">
+            <input type="password" id="admin-password" placeholder="Enter admin password" required />
+            <button type="button" class="toggle-pw" id="toggle-pw" aria-label="Toggle password visibility">
+              <i class="ph ph-eye"></i>
+            </button>
+          </div>
+          <p class="login-error" id="login-error"></p>
+        </div>
+        <button type="submit" class="btn-login">
+          <i class="ph ph-sign-in"></i> Sign In
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========== ADMIN DASHBOARD ========== -->
+  <div class="admin-dashboard" id="admin-dashboard" style="display:none;">
+
+    <!-- Top Bar -->
+    <header class="admin-topbar">
+      <div class="topbar-left">
+        <img src="images/logo.png" alt="Sukrutham" class="topbar-logo" />
+        <div>
+          <h1 class="topbar-title">Admin Panel</h1>
+          <p class="topbar-subtitle">Testimonials Management</p>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <a href="index.html" class="topbar-link" target="_blank">
+          <i class="ph ph-arrow-square-out"></i> View Site
+        </a>
+        <button class="btn-logout" id="btn-logout">
+          <i class="ph ph-sign-out"></i> Logout
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+
+      <!-- Config Warning -->
+      <div class="config-warning" id="config-warning" style="display:none;">
+        <i class="ph ph-warning-circle"></i>
+        <div>
+          <strong>Supabase Not Configured</strong>
+          <p>Please update <code>supabase-config.js</code> with your Supabase URL and anon key to enable database operations.</p>
+        </div>
+      </div>
+
+      <!-- Stats Bar -->
+      <div class="stats-bar">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="ph ph-chat-text"></i></div>
+          <div>
+            <span class="stat-num" id="stat-total">0</span>
+            <span class="stat-label">Total</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon stat-icon-gold"><i class="ph ph-star"></i></div>
+          <div>
+            <span class="stat-num" id="stat-featured">0</span>
+            <span class="stat-label">Featured</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon stat-icon-green"><i class="ph ph-chart-line-up"></i></div>
+          <div>
+            <span class="stat-num" id="stat-avg-rating">0</span>
+            <span class="stat-label">Avg Rating</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add New Testimonial -->
+      <div class="panel-section">
+        <div class="panel-header" id="add-panel-toggle">
+          <h2><i class="ph ph-plus-circle"></i> Add New Testimonial</h2>
+          <button class="panel-toggle-btn" aria-label="Toggle panel">
+            <i class="ph ph-caret-down"></i>
+          </button>
+        </div>
+        <div class="panel-body" id="add-panel-body">
+          <form id="add-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="add-name">Full Name *</label>
+                <input type="text" id="add-name" placeholder="e.g. Suresh Rajan" required />
+              </div>
+              <div class="form-group">
+                <label for="add-location">Location *</label>
+                <input type="text" id="add-location" placeholder="e.g. Kochi, Kerala" required />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="add-quote">Testimonial Quote *</label>
+              <textarea id="add-quote" rows="4" placeholder="Enter the customer's testimonial..." required></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="add-rating">Rating</label>
+                <div class="rating-picker" id="add-rating-picker">
+                  <i class="ph-fill ph-star active" data-val="1"></i>
+                  <i class="ph-fill ph-star active" data-val="2"></i>
+                  <i class="ph-fill ph-star active" data-val="3"></i>
+                  <i class="ph-fill ph-star active" data-val="4"></i>
+                  <i class="ph-fill ph-star active" data-val="5"></i>
+                </div>
+                <input type="hidden" id="add-rating" value="5" />
+              </div>
+              <div class="form-group">
+                <label for="add-featured">Featured</label>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="add-featured" />
+                  <span class="toggle-slider"></span>
+                  <span class="toggle-label">Mark as featured</span>
+                </label>
+              </div>
+            </div>
+            <button type="submit" class="btn-add" id="btn-add">
+              <i class="ph ph-plus"></i> Add Testimonial
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Testimonials List -->
+      <div class="panel-section">
+        <div class="panel-header">
+          <h2><i class="ph ph-list"></i> All Testimonials</h2>
+          <button class="btn-refresh" id="btn-refresh" title="Refresh">
+            <i class="ph ph-arrows-clockwise"></i>
+          </button>
+        </div>
+        <div class="panel-body">
+          <div class="testimonials-list" id="testimonials-list">
+            <!-- Loading state -->
+            <div class="admin-loading" id="admin-loading">
+              <div class="admin-spinner"></div>
+              <p>Loading testimonials...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ========== EDIT MODAL ========== -->
+  <div class="modal-overlay" id="edit-modal" style="display:none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i class="ph ph-pencil-simple"></i> Edit Testimonial</h3>
+        <button class="modal-close" id="modal-close" aria-label="Close modal">
+          <i class="ph ph-x"></i>
+        </button>
+      </div>
+      <form id="edit-form">
+        <input type="hidden" id="edit-id" />
+        <div class="form-row">
+          <div class="form-group">
+            <label for="edit-name">Full Name *</label>
+            <input type="text" id="edit-name" required />
+          </div>
+          <div class="form-group">
+            <label for="edit-location">Location *</label>
+            <input type="text" id="edit-location" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="edit-quote">Testimonial Quote *</label>
+          <textarea id="edit-quote" rows="4" required></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Rating</label>
+            <div class="rating-picker" id="edit-rating-picker">
+              <i class="ph-fill ph-star active" data-val="1"></i>
+              <i class="ph-fill ph-star active" data-val="2"></i>
+              <i class="ph-fill ph-star active" data-val="3"></i>
+              <i class="ph-fill ph-star active" data-val="4"></i>
+              <i class="ph-fill ph-star active" data-val="5"></i>
+            </div>
+            <input type="hidden" id="edit-rating" value="5" />
+          </div>
+          <div class="form-group">
+            <label>Featured</label>
+            <label class="toggle-switch">
+              <input type="checkbox" id="edit-featured" />
+              <span class="toggle-slider"></span>
+              <span class="toggle-label">Mark as featured</span>
+            </label>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" id="btn-cancel-edit">Cancel</button>
+          <button type="submit" class="btn-save">
+            <i class="ph ph-floppy-disk"></i> Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========== DELETE CONFIRM MODAL ========== -->
+  <div class="modal-overlay" id="delete-modal" style="display:none;">
+    <div class="modal-card modal-card-sm">
+      <div class="modal-header modal-header-danger">
+        <h3><i class="ph ph-trash"></i> Delete Testimonial</h3>
+        <button class="modal-close" id="delete-modal-close" aria-label="Close modal">
+          <i class="ph ph-x"></i>
+        </button>
+      </div>
+      <div class="modal-body-text">
+        <p>Are you sure you want to delete this testimonial from <strong id="delete-name"></strong>? This action cannot be undone.</p>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" id="btn-cancel-delete">Cancel</button>
+        <button type="button" class="btn-delete-confirm" id="btn-confirm-delete">
+          <i class="ph ph-trash"></i> Delete
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
